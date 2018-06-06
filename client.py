@@ -1,47 +1,42 @@
-##Client for Multiple Client ChatServer
+#Client for Multiple Client ChatServer
 
-import socket
 import sys, os
+import socket
 from threading import Thread
 
-
 def join():
-    chatroom = input('Enter Chatroom name to proceed')
+    chatroom = input('Enter Room name to proceed: ')
 
-    conn_msg = "JOIN_CHATROOM:".encode('utf-8') + chatroom.encode('utf-8') + "\n".encode('utf-8')
+    conn_msg = "JOIN_ROOM:".encode('utf-8') + chatroom.encode('utf-8') + "\n".encode('utf-8')
     conn_msg += "CLIENT IP: \n".encode('utf-8')
     conn_msg += "PORT: \n".encode('utf-8')
-    conn_msg += "CLIENT_NAME:".encode('utf-8') + Cname.encode('utf-8') + "\n".encode('utf-8')
+    conn_msg += "CLIENT_NAME:".encode('utf-8') + client_name.encode('utf-8') + "\n".encode('utf-8')
     s.send(conn_msg)
 
-
 def chat(socket):
-    croom = input('Which room to send message to? ')
-    chat_message = input('Type message to send: ')
-    msg = "CHAT: ".encode('utf-8') + croom.encode('utf-8') + "\n".encode('utf-8')
+    chat_room = input('Which room?: ')
+    chat_message = input('Enter message to send: ')
+    msg = "CHAT: ".encode('utf-8') + chat_room.encode('utf-8') + "\n".encode('utf-8')
     msg += "JOIN_ID: ".encode('utf-8') + str(jID).encode('utf-8') + "\n".encode('utf-8')
-    msg += "CLIENT_NAME: ".encode('utf-8') + Cname.encode('utf-8') + "\n".encode('utf-8')
+    msg += "CLIENT_NAME: ".encode('utf-8') + client_name.encode('utf-8') + "\n".encode('utf-8')
     msg += "MESSAGE: ".encode('utf-8') + chat_message.encode('utf-8') + "\n\n".encode('utf-8')
     socket.send(msg)
-
 
 def leave(s):
     rTL = input('Room to Leave ')
     msg = "LEAVE_CHATROOM: ".encode('utf-8') + rTL.encode('utf-8') + "\n".encode('utf-8')
     msg += "JOIN_ID: ".encode('utf-8') + jID.encode('utf-8') + "\n".encode('utf-8')
-    msg += "CLIENT_NAME: ".encode('utf-8') + Cname.encode('utf-8')
+    msg += "CLIENT_NAME: ".encode('utf-8') + client_name.encode('utf-8')
     s.send(msg)
-
 
 def discon():
     msg = "DISCONNECT: \n".encode('utf-8')
     msg += "PORT: \n".encode('utf-8')
-    msg += "CLIENT_NAME: ".encode('utf-8') + Cname.encode('utf-8') + "\n".encode('utf-8')
+    msg += "CLIENT_NAME: ".encode('utf-8') + client_name.encode('utf-8') + "\n".encode('utf-8')
     s.send(msg)
 
     s.close()
     os._exit(1)
-
 
 class Client(Thread):
     def __init__(self, socket):
@@ -55,24 +50,22 @@ class Client(Thread):
             print('Message from Client: ')
             print(data.decode(encoding='utf-8'))
 
-
-# create a socket object
-
+#Create socket object
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# get local machine name 
-host = input('Enter Hostname:')
+#Get name of local machine 
+host = input('Enter Hostname: ')
+port = input('Input Port no: ')
 
-port = input('Input Port ')
 # connection to hostname on the port. 
 s.connect((host, int(port)))
 
-##### test response from server
+#Test response from the server
 test_send = "HELO text \n".encode('utf-8')
 s.send(test_send)
 print(s.recv(1024))
 
-Cname = input('Give Client Name:')
+client_name = input('Client Name: ')
 join()
 jID = 0
 data = s.recv(1024)
